@@ -7,5 +7,5 @@ Multithreaded port scanner written in Python.
 Use the command 'pip install -r requirements.txt' to install all requirements at once.
 
 ## Usage
-l. asd
-l. asd
+1.
+1.
