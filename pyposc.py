@@ -3,6 +3,7 @@ import os
 import socket
 import threading
 import re
+import time
 from queue import Queue
 from pyfiglet import Figlet
 from termcolor import colored
@@ -14,7 +15,7 @@ queue = Queue()
 def welcome():
 	f = Figlet("5lineoblique")
 	print(colored(f.renderText("pyposc"), "cyan")) 
-	print(colored(":::> pyposc :::> Created by Haroon :::> Version: 1.0 :::>", "yellow"))
+	print(colored(":::> pyposc :::> Created by Haroon :::> Version: 1.2 :::>", "yellow"))
 
 def error_message():
 	print(colored("[-] Invalid input", "red"))
@@ -48,7 +49,7 @@ def get_ports():
 		elif "-" in user_input:
 			if not correct_input(user_input, port_pattern, "-"):
 				continue
-			for port in range(int(correct_input(user_input, port_pattern, "-")[0]), int(correct_input(user_input, port_pattern, "-")[1])):
+			for port in range(int(correct_input(user_input, port_pattern, "-")[0]), int(correct_input(user_input, port_pattern, "-")[1]) + 1):
 				queue.put(port)
 			break
 		else:
@@ -73,7 +74,11 @@ def scan_port(ip_address):
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			s.connect((ip_address, port))
 			s.close()
-			print(colored(f"[+] Port {port} is open: {socket.getservbyport(port)}", "green"))
+			try:
+				service = socket.getservbyport(port)
+			except:
+				service = "unknown"
+			print(colored(f"[+] Port {port} is open: {service}", "green"))
 			global open_ports
 			open_ports += 1
 		except:
@@ -84,22 +89,20 @@ try:
 	welcome()
 	target = get_target()
 	get_ports()
+	num_of_ports = queue.qsize()
 	num_of_threads = get_threads()
 	print(colored(f"\n[*] Scanning {target}", "cyan"))
-
 	thread_list = []
-	
 	for t in range(num_of_threads):
 		thread = threading.Thread(target = scan_port, args = (target,))
 		thread_list.append(thread)
-
+	start = time.perf_counter()
 	for thread in thread_list:
 		thread.start()
-
 	for thread in thread_list:
 		thread.join()
-
-	print(colored(f"[*] Number of open ports: {open_ports}", "cyan"))
-
+	end = time.perf_counter()
+	scan_time = end - start
+	print(colored(f"[*] Scanned {num_of_ports} ports in {scan_time:0.1f} seconds. Found {open_ports} open ports", "cyan"))
 except KeyboardInterrupt:
 	sys.exit(0)
