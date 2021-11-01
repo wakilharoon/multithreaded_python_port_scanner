@@ -11,11 +11,12 @@ from termcolor import colored
 os.system("color")
 socket.setdefaulttimeout(1)
 queue = Queue()
+open_ports = 0
 
 def welcome():
 	f = Figlet("5lineoblique")
 	print(colored(f.renderText("pyposc"), "cyan")) 
-	print(colored(":::> pyposc :::> Created by Haroon :::> Version: 1.2 :::>", "yellow"))
+	print(colored(":::> pyposc :::> Created by Haroon :::> Version: 1.3 :::>", "yellow"))
 
 def error_message():
 	print(colored("[-] Invalid input", "red"))
@@ -60,10 +61,13 @@ def get_ports():
 
 def get_threads():
 	while True:
-		user_input = input("[*] Enter number of threads to use: ")
+		user_input = input("[*] Enter number of threads to use (1 - 1000): ")
 		try:
 			user_input = int(user_input)
-			return user_input
+			if 1 <= user_input <= 1000:
+				return user_input
+			else:
+				print(colored("[-] Number of threads must be between 1 and 1000", "red"))
 		except:
 			error_message()
 
@@ -85,7 +89,6 @@ def scan_port(ip_address):
 			pass
 
 try:
-	open_ports = 0
 	welcome()
 	target = get_target()
 	get_ports()
@@ -95,10 +98,9 @@ try:
 	thread_list = []
 	for t in range(num_of_threads):
 		thread = threading.Thread(target = scan_port, args = (target,))
+		thread.start()
 		thread_list.append(thread)
 	start = time.perf_counter()
-	for thread in thread_list:
-		thread.start()
 	for thread in thread_list:
 		thread.join()
 	end = time.perf_counter()

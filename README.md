@@ -11,7 +11,7 @@ Use the command 'pip install -r requirements.txt' to install all requirements at
 1. Run 'python pyposc.py'
 1. Enter an IP address in the format (192.168.1.1)
 2. Enter a single port (a), multiple ports (a, b, c) or a range of ports (a-b)
-3. Enter number of threads to use for the scanning
+3. Enter number of threads to use for the scan
 
 ## Changelog
 ###### Version 1.1:
@@ -19,3 +19,6 @@ Use the command 'pip install -r requirements.txt' to install all requirements at
 ###### Version 1.2
 * Added a timer that will print out how many seconds the scan took to finalize at the end of a scan.
 * Fixed a bug where the last port in a port range wouldn't get scanned.
+###### Version 1.3
+* Added input validation on number of threads.
+* Limited number of threads to a maximum of 1000.
